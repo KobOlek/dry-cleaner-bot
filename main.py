@@ -1,10 +1,11 @@
 from config import *
 import telebot
 from telebot import types
+from database import *
 
 bot = telebot.TeleBot(TOKEN)
-phone_number = ""
 
+create_table() # creates a user table
 
 @bot.message_handler(commands=["start"])
 def start(message):
@@ -19,8 +20,10 @@ def start(message):
 
 @bot.message_handler(content_types=["contact"])
 def bot_message_after_registration(message):
-    global phone_number
     phone_number = message.contact.phone_number
+
+    set_phone_number(message.from_user.username, phone_number) # add user's phone number to the table
+    
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("⚙")
     item2 = types.KeyboardButton("ЧАТ")
@@ -32,7 +35,6 @@ def bot_message_after_registration(message):
 
 @bot.message_handler(content_types=["text"])
 def bot_message(message):
-    global phone_number
     if message.text == "⚙":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Акаунт")
@@ -42,6 +44,7 @@ def bot_message(message):
         markup.add(item1, item2, item3)
         markup.add(back)
 
+        phone_number = get_phone_number(message.from_user.username)
         bot.send_message(message.chat.id, f"Налаштування по номеру *{phone_number}*", reply_markup=markup,
                          parse_mode="Markdown")
     elif message.text == "Акаунт":
@@ -50,7 +53,7 @@ def bot_message(message):
         item2 = types.KeyboardButton("ЧАТ")
         item3 = types.KeyboardButton("❤ Поділитися")
         markup.add(item1, item2, item3)
-        bot.send_message(message.chat.id, f"Ім'я: {message.from_user.first_name}\nНомер телефону: +{phone_number}",
+        bot.send_message(message.chat.id, f"Ім'я: {message.from_user.first_name}\nНомер телефону: +{get_phone_number(message.from_user.username)}",
                          reply_markup=markup)
 
     elif message.text == "Оновити номер":
@@ -114,7 +117,7 @@ def bot_message(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
-    global phone_number
+     
     if call.message:
         if call.data == "main_menu":
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
