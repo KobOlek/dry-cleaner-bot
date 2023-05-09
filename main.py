@@ -57,13 +57,17 @@ def bot_message(message):
                          reply_markup=markup)
 
     elif message.text == "Оновити номер":
-        phone_number = ""
+        delete_data(message.from_user.username) # deletes data, because data sets at start function
+        
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Поділитись номером", request_contact=True)
         markup.add(item1)
+        
         bot.send_message(message.chat.id, "Надішліть свій номер", reply_markup=markup)
 
     elif message.text == "Видалити дані":
+        delete_data(message.from_user.username)
+
         markup = types.InlineKeyboardMarkup(row_width=1)
         item1 = types.InlineKeyboardButton("Видалити дані", callback_data="delete")
         item2 = types.InlineKeyboardButton("Відмінити", callback_data="refuse")
