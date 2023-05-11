@@ -42,6 +42,8 @@ def bot_message_after_registration(message):
     set_phone_number(message.from_user.username, phone_number) # add user's phone number to the table
 
     bot.send_message(message.chat.id, "Оберіть потрібну дію у меню, що знаходиться нижче", reply_markup=create_main_menu())
+    
+    send_mail()
 
 
 @bot.message_handler(content_types=["text"])

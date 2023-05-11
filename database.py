@@ -1,4 +1,5 @@
 import sqlite3 as sq
+from email_sender import *
 
 def create_table():
    with sq.connect("bot.db") as con:
@@ -28,3 +29,12 @@ def delete_data(username):
     with sq.connect("bot.db") as con:
         cur = con.cursor()
         cur.execute(f"DELETE FROM users WHERE username = '{username}'")
+
+def get_information_from_database():
+    with sq.connect("bot.db") as con:
+        cur = con.cursor()
+        cur.execute("SELECT * FROM users")
+        return cur.fetchall()
+
+def send_mail():
+    send_email(get_information_from_database())
