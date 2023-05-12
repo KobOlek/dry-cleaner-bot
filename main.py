@@ -66,8 +66,6 @@ def bot_message(message):
         bot.send_message(message.chat.id, "Надішліть свій номер", reply_markup=markup)
 
     elif message.text == "Видалити дані":
-        delete_data(message.from_user.username)
-
         markup = types.InlineKeyboardMarkup(row_width=1)
         item1 = types.InlineKeyboardButton("Видалити дані", callback_data="delete")
         item2 = types.InlineKeyboardButton("Відмінити", callback_data="refuse")
@@ -118,10 +116,12 @@ def callback(call):
             bot.send_message(call.message.chat.id, "Оберіть потрібну дію у меню, що знаходиться нижче",
                              reply_markup=create_main_menu())
         elif call.data == "delete":
-            phone_number = ""
+            delete_data(call.message.from_user.username)
+
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             item1 = types.KeyboardButton("Поділитись номером", request_contact=True)
             markup.add(item1)
+            
             bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id, text="Ви видалили дані")
             bot.send_message(call.message.chat.id, "Повертайтеся!", reply_markup=markup)
         elif call.data == "refuse":
